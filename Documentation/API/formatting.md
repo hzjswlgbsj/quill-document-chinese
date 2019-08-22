@@ -1,5 +1,4 @@
 # Formatting
----
 ## format
 格式化文本在用户当前选择，返回表示更改的[Delta](https://quilljs.com/guides/designing-the-delta-format/)。 如果用户的选择长度为0，即它是光标，则格式将被设置为活动，因此用户键入的下一个字符将具有该格式。[来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 

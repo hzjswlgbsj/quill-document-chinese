@@ -1,5 +1,4 @@
 # Extension
----
 ## debug
 允许在给定级别记录消息的静态方法：`'error'`，`'warn'`，`'log'`或`'info'`。 传递true相当于传递`'log'`。 传递`false`会禁用所有消息。
 

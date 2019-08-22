@@ -1,5 +1,4 @@
 # Content
----
 ## deleteText
 从编辑器中删除文本，返回表示更改的[Delta](https://quilljs.com/guides/designing-the-delta-format/)。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
