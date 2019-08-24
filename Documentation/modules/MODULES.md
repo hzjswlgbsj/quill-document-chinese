@@ -1,4 +1,4 @@
-## API 索引
+##  MODULES 索引
 1. [toolbar](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/Toolbar.md)
 2. [Keyboard](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/keyboard.md)
 3. [History](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/history.md)
