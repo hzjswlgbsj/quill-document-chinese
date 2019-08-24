@@ -6,7 +6,7 @@
 
 没有DOM API，其中字符是度量单位。 有了这个限制，大多数富文本编辑器都无法回答简单的问题，例如“此范围内的文本是什么？”或“光标是否加粗文本？”试图在这些基元之上构建丰富的编辑体验非常困难和令人沮丧。
 
-Quill专为编辑和角色而设计，并在这些以自然文本为中心的单元之上构建其API。 要查明某些内容是否为粗体，Quill不需要遍历DOM查找`<b>`或`<strong>`节点或字体权重样式属性 - 只需调用`getFormat（5,1`。 它的所有核心[API](https://quilljs.com/docs/api/)调用都允许任意索引和长度进行访问或修改。 其[event API](https://quilljs.com/docs/api/#events)还以直观的JSON格式报告更改。 无需解析HTML或差异DOM树。
+Quill专为编辑和角色而设计，并在这些以自然文本为中心的单元之上构建其API。 要查明某些内容是否为粗体，Quill不需要遍历DOM查找`<b>`或`<strong>`节点或字体权重样式属性 - 只需调用`getFormat（5,1`。 它的所有核心[API](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/API.md)调用都允许任意索引和长度进行访问或修改。 其[event API](https://quilljs.com/docs/api/#events)还以直观的JSON格式报告更改。 无需解析HTML或差异DOM树。
 
 ## 自定义内容和格式
 过去评估富文本编辑器就像比较所需格式的清单一样简单。 一个好的富文本编辑器的标记就是它支持的格式。 这仍然是一个重要的衡量标准，但下限接近无穷大。
