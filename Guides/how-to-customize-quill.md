@@ -17,7 +17,7 @@ Quill正式支持标准工具栏主题[Snow](https://github.com/hzjswlgbsj/quill
 <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css">
 ```
 
-从那里，您可以实现并附加自己的UI元素，如自定义下拉列表或工具提示。 [Cloning Medium with Parchment](https://quilljs.com/guides/cloning-medium-with-parchment/#final-polish)的最后一部分提供了一个实例。
+从那里，您可以实现并附加自己的UI元素，如自定义下拉列表或工具提示。 [Cloning Medium with Parchment](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md)的最后一部分提供了一个实例。
 
 ## 模块
 Quill采用模块化架构设计，由一个小型编辑核心组成，周围环绕着增强其功能的模块。 其中一些功能对于编辑非常不可或缺，例如管理撤消和重做的[历史记录](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/modules/history.md)模块。 由于所有模块都使用暴露给开发人员的相同公共[API](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/API.md)，因此在必要时甚至可以交换核心模块。
@@ -40,7 +40,7 @@ var quill = new Quill('#editor', {
 
 尽管如此，坚持使用Quill模块化设计，您仍然可以通过实现自己的撤消管理器来替换历史记录模块，从而彻底改变撤消和重做或任何其他核心功能的工作方式。 只要您实现相同的API接口，Quill就会很乐意使用您的替换模块。 通过继承现有模块并覆盖要更改的方法，可以轻松完成此操作。 查看[模块](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/modules/MODULES.md)文档，了解覆盖核心[剪贴板](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/modules/clipboard.md)模块的一个非常简单的示例。
 
-最后，您可能希望添加现有模块未提供的功能。 在这种情况下，可以方便地将其组织为Quill模块，[Building A Custom Module](https://quilljs.com/guides/building-a-custom-module/)指南涵盖了该模块。 当然，在您的应用程序代码中，将此逻辑与Quill分开肯定是有效的。
+最后，您可能希望添加现有模块未提供的功能。 在这种情况下，可以方便地将其组织为Quill模块，[Building A Custom Module](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/build-a-custom-module.md)指南涵盖了该模块。 当然，在您的应用程序代码中，将此逻辑与Quill分开肯定是有效的。
 
 ## 内容和格式
 Quill允许通过其文档模型[Parchment](https://github.com/quilljs/parchment/)修改和扩展它理解的内容和格式。 内容和格式在Parchment中表示为Blots或Attributors，它们大致对应于DOM中的节点或属性。
@@ -129,6 +129,6 @@ var quill = new Quill('#editor', {
 });
 ```
 
-您可以通过调用`console.log（Quill.imports）;`来查看可用的Blots和Attributors列表。 不支持直接修改此对象。 请改用[Quill.register](https://quilljs.com/docs/api/#register)。
+您可以通过调用`console.log（Quill.imports）;`来查看可用的Blots和Attributors列表。 不支持直接修改此对象。 请改用[Quill.register](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/extension.md)。
 
-关于 Parchment ，Blots 和 Attributors 的完整参考可以在Parchment自己的[README](https://github.com/quilljs/parchment/)中找到。 要进行深入的演练，请查看[Cloning Medium with Parchment](https://quilljs.com/guides/cloning-medium-with-parchment/)，它以Quill理解纯文本开头，添加所有[Medium](https://medium.com/)支持的格式。 大多数情况下，您不必从头开始构建格式，因为大多数格式已经在Quill中实现，但它仍然有助于理解Quill如何在更深层次上工作。
+关于 Parchment ，Blots 和 Attributors 的完整参考可以在Parchment自己的[README](https://github.com/quilljs/parchment/)中找到。 要进行深入的演练，请查看[Cloning Medium with Parchment](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md)，它以Quill理解纯文本开头，添加所有[Medium](https://medium.com/)支持的格式。 大多数情况下，您不必从头开始构建格式，因为大多数格式已经在Quill中实现，但它仍然有助于理解Quill如何在更深层次上工作。
