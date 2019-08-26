@@ -8,6 +8,7 @@
 ## Groundwork（准备工作）
 让我们在没有使用Quill的情况下开始，只需要一个textarea和按钮，连接到一个虚拟事件监听器。 我们将在本指南中使用jQuery以方便使用，但Quill和Parchment都不依赖于此。在[Google Fonts](https://fonts.google.com/)和[Font Awesome](http://www.fontawesome.com.cn/faicons/)的帮助下，我们还将添加一些基本样式。 这些与Quill或Parchment没有任何关系，所以我们会快速进行。
 
+HTML：
 ```html
 <div id="tooltip-controls">
   <button id="bold-button"><i class="fa fa-bold"></i></button>
@@ -26,7 +27,7 @@
 <!-- <textarea id="editor-container">Tell your story...</textarea> -->
 <div id="editor-container">Tell your story...</div>
 ```
-
+CSS：
 ```css
 * {
   box-sizing: border-box;
@@ -70,6 +71,7 @@ button:active, button:focus {
 }
 ```
 
+JavaScript：
 ```js
 $('button').click(function() {
   alert('Click!');
@@ -240,3 +242,213 @@ $('#link-button').click(function() {
 ```
 
 注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/VjRovy)过去。
+
+## Blockquote and Headers
+Blockquotes的实现方式与Bold blots相同，只是我们要继承的基本块级别的Blot是Block，而不是Inline。 虽Inline blots可以嵌套，但Block blots不能。 当应用于相同的文本范围时，Block blots不是合并，而是直接相互替换。
+
+```js
+let Block = Quill.import('blots/block');
+
+class BlockquoteBlot extends Block { }
+BlockquoteBlot.blotName = 'blockquote';
+BlockquoteBlot.tagName = 'blockquote';
+```
+
+标题的实现方式完全相同，只有一个区别：它可以由多个DOM元素表示。默认情况下，格式的值变为tagName，而不是`true`。我们可以通过扩展`formats()`来定制它，类似于我们[links](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#links)那样。
+
+```js
+class HeaderBlot extends Block {
+  static formats(node) {
+    return HeaderBlot.tagName.indexOf(node.tagName) + 1;
+  }
+}
+HeaderBlot.blotName = 'header';
+// Medium只支持两种页眉大小，所以我们只演示两种,
+// 但我们可以轻松地在这个数组中添加更多标签
+HeaderBlot.tagName = ['H1', 'H2'];
+```
+
+让我们将这些新的污点挂钩到各自的按钮，并为`<blockquote>`标记添加一些CSS。
+
+```js
+let Inline = Quill.import('blots/inline');
+let Block = Quill.import('blots/block');
+
+class BoldBlot extends Inline { }
+BoldBlot.blotName = 'bold';
+BoldBlot.tagName = 'strong';
+
+class ItalicBlot extends Inline { }
+ItalicBlot.blotName = 'italic';
+ItalicBlot.tagName = 'em';
+
+class LinkBlot extends Inline {
+  static create(url) {
+    let node = super.create();
+    node.setAttribute('href', url);
+    node.setAttribute('target', '_blank');
+    return node;
+  }
+  
+  static formats(node) {
+    return node.getAttribute('href');
+  }
+}
+LinkBlot.blotName = 'link';
+LinkBlot.tagName = 'a';
+
+class BlockquoteBlot extends Block { }
+BlockquoteBlot.blotName = 'blockquote';
+BlockquoteBlot.tagName = 'blockquote';
+
+class HeaderBlot extends Block { }
+HeaderBlot.blotName = 'header';
+HeaderBlot.tagName = ['h1', 'h2'];
+
+Quill.register(BoldBlot);
+Quill.register(ItalicBlot);
+Quill.register(LinkBlot);
+Quill.register(BlockquoteBlot);
+Quill.register(HeaderBlot);
+
+let quill = new Quill('#editor-container');
+
+$('#bold-button').click(function() {
+  quill.format('bold', true);
+});
+$('#italic-button').click(function() {
+  quill.format('italic', true);
+});
+
+$('#link-button').click(function() {
+  let value = prompt('Enter link URL');
+  quill.format('link', value);
+});
+
+$('#blockquote-button').click(function() {
+  quill.format('blockquote', true);
+});
+
+$('#header-1-button').click(function() {
+  quill.format('header', 1);
+});
+
+$('#header-2-button').click(function() {
+  quill.format('header', 2);
+});
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/NAmKAR)过去。
+
+尝试将一些文本设置为H1，然后在控制台中运行`quill.getContents()`。您将看到我们的自定义静态`formats()`函数正常工作。确保将上下文设置为正确的CodePen iframe，以便能够访问演示中的`quill`变量。
+
+## Dividers
+现在让我们实现我们的第一片叶子Blot。虽然我们之前的Blot示例提供格式化并实现`format()`，leaf Blots 提供内容并实现`value()`。Leaf Blots可以是Text或Embed Blots，因此我们的section divider将是一个Embed。一旦创建，Embed Blots的值是不可变的，需要删除和重新插入才能更改该位置的内容。
+
+除了从BlockEmbed继承之外，我们的方法与之前类似。Embed也存在于blots/embed下，但是用于内联级别的blots。我们希望块级实现代替分区器。
+
+```js
+let BlockEmbed = Quill.import('blots/block/embed');
+
+class DividerBlot extends BlockEmbed { }
+DividerBlot.blotName = 'divider';
+DividerBlot.tagName = 'hr';
+```
+
+我们的点击处理程序调用[insertEmbed()](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/content.md#insertembed)，它不像我们那样可以方便地确定，保存和恢复用户选择，例如[format()](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/formatting.md#format)。是的，所以我们必须做更多的工作来保护自己的选择。另外，当我们尝试在Block的中间插入一个BlockEmbed时，Quill会为我们分割Block。为了使这种行为更加清晰，我们将通过在插入分隔符之前插入换行符来自行拆分块。请查看CodePen中的Babel选项卡以了解具体信息。
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/QEPLrv)过去。
+
+## Images
+image的实现可以借鉴[Link](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#links)和[Divider](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#divider)blots的实现方式。我们将使用一个对象作为值来显示如何支持它。我们用于插入图像的按钮处理程序将使用静态值，因此我们不会被与Parchment无关的工具提示UI代码分心，这是本指南的重点。
+
+```js
+let BlockEmbed = Quill.import('blots/block/embed');
+
+class ImageBlot extends BlockEmbed {
+  static create(value) {
+    let node = super.create();
+    node.setAttribute('alt', value.alt);
+    node.setAttribute('src', value.url);
+    return node;
+  }
+
+  static value(node) {
+    return {
+      alt: node.getAttribute('alt'),
+      url: node.getAttribute('src')
+    };
+  }
+}
+ImageBlot.blotName = 'image';
+ImageBlot.tagName = 'img';
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/Pzggmy)过去。
+
+## Videos
+我们将以与[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#image)类似的方式实现视频。我们可以使用HTML5`<video>`标签，但我们不能以这种方式播放YouTube视频，因为这可能是更常见和相关的用例，我们将使用`<iframe>`来支持此功能。在此我们不必，但是如果你想要多个Blots来使用相同的标签，除了`tagName`之外你还可以使用`className`，在下一个[Tweet](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#tweet)示例中进行了演示。
+
+此外，我们将添加对宽度和高度的支持，作为未注册的格式。只要没有与注册格式的命名空间冲突，就不必单独注册Embeds特有的格式。这是有效的，因为Blots只是将未知格式传递给它的孩子，最终到达了叶子。这也允许不同的Embeds以不同方式处理未注册的格式。例如，我们从早期嵌入的[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#image)可以识别和处理`width`格式，与我们的视频在这里不同。
+
+```js
+class VideoBlot extends BlockEmbed {
+  static create(url) {
+    let node = super.create();
+    node.setAttribute('src', url);
+    // 使用静态值设置非格式相关属性
+    node.setAttribute('frameborder', '0');
+    node.setAttribute('allowfullscreen', true);
+
+    return node;
+  }
+
+  static formats(node) {
+    // 我们仍然需要报告未注册的嵌入格式
+    let format = {};
+    if (node.hasAttribute('height')) {
+      format.height = node.getAttribute('height');
+    }
+    if (node.hasAttribute('width')) {
+      format.width = node.getAttribute('width');
+    }
+    return format;
+  }
+
+  static value(node) {
+    return node.getAttribute('src');
+  }
+
+  format(name, value) {
+    // 处理未注册的嵌入格式
+    if (name === 'height' || name === 'width') {
+      if (value) {
+        this.domNode.setAttribute(name, value);
+      } else {
+        this.domNode.removeAttribute(name, value);
+      }
+    } else {
+      super.format(name, value);
+    }
+  }
+}
+VideoBlot.blotName = 'video';
+VideoBlot.tagName = 'iframe';
+```
+请注意，如果您打开控制台并调用[getContents](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/content.md#getcontents)，Quill会将视频报告为：
+
+```js
+{
+  ops: [{
+    insert: {
+      video: 'https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0'
+    },
+    attributes: {
+      height: '170',
+      width: '400'
+    }
+  }]
+}
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/qNwWzW)过去。
