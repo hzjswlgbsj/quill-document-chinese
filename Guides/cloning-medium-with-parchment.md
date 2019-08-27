@@ -452,3 +452,38 @@ VideoBlot.tagName = 'iframe';
 ```
 
 注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/qNwWzW)过去。
+
+## Tweets
+Medium支持许多嵌入类型，但我们只关注本指南的推文。Tweet blot实现与[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#images)几乎完全相同。我们利用Embed blots不必对应于void节点的事实。它可以是任意节点，Quill会将其视为void节点，而不是遍历其子节点或后代。这允许我们使用`<div>`和本地Twitter Javascript库在我们指定的`<div>`容器中做它喜欢的事情。
+
+由于我们的根Scroll Blot也使用<div>，我们还指定`className`来消除歧义。注意Inline blot使用`<span>`，Block Blots默认使用`<p>`，因此如果您想将这些标记用于自定义Blots，除了`tagName`之外，还必须指定`className`。
+
+我们使用Tweet id作为定义Blot的值。 我们的点击处理程序再次使用静态值来避免分散不相关的UI代码。
+
+```js
+class TweetBlot extends BlockEmbed {
+  static create(id) {
+    let node = super.create();
+    node.dataset.id = id;
+    // Allow twitter library to modify our contents
+    twttr.widgets.createTweet(id, node);
+    return node;
+  }
+
+  static value(domNode) {
+    return domNode.dataset.id;
+  }
+}
+TweetBlot.blotName = 'tweet';
+TweetBlot.tagName = 'div';
+TweetBlot.className = 'tweet';
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/vKrBjE)过去。
+
+## Final Polish
+我们从一堆按钮和一个只能理解明文的Quill核心开始。使用Parchment，我们可以添加粗体，斜体，链接，块引用，标题，部分分隔符，图像，视频甚至推文。所有这些都是在维护可预测且一致的文档的同时，允许我们使用Quill强大的[API](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/API.md)以及这些新格式和内容。
+
+让我们添加一些最后的润色来完成我们的演示。 它不会与Medium的用户界面相比，但我们会尽力接近。
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/qNJrYB)过去。
