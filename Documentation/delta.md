@@ -5,7 +5,7 @@ Deltas是一种简单但富有表现力的格式，可用于描述Quill的内容
 
 Deltas作为独立的[独立库](https://github.com/quilljs/delta/)实现，允许在Quill之外使用。 它适用于[OT(Operational Transform)](https://en.wikipedia.org/wiki/Operational_transformation)，并可用于实时协作，就像Google Docs一样。 有关Deltas的更深入解释，请参阅[设计Delta格式](https://quilljs.com/guides/designing-the-delta-format/)。
 
-**注意：**不建议手动构造Deltas，而是使用可链接的[insert()](https://github.com/quilljs/delta#insert)，[delete()](https://github.com/quilljs/delta#delete) 和 [retain()](https://github.com/quilljs/delta#retain)方法来创建新的Deltas。 您可以使用import（）从Quill访问Delta。
+**注意**：不建议手动构造Deltas，而是使用可链接的[insert()](https://github.com/quilljs/delta#insert)，[delete()](https://github.com/quilljs/delta#delete) 和 [retain()](https://github.com/quilljs/delta#retain)方法来创建新的Deltas。 您可以使用import（）从Quill访问Delta。
 
 ## Document
 Delta格式几乎是完全不言自明的，下面的例子描述了字符串Gandalf The Grey，其中Gandalf是粗体，灰色是彩色#cccccc。

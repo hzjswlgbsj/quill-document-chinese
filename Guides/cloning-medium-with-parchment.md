@@ -268,7 +268,7 @@ HeaderBlot.blotName = 'header';
 HeaderBlot.tagName = ['H1', 'H2'];
 ```
 
-让我们将这些新的污点挂钩到各自的按钮，并为`<blockquote>`标记添加一些CSS。
+让我们将这些新的blot挂钩到各自的按钮，并为`<blockquote>`标记添加一些CSS。
 
 ```js
 let Inline = Quill.import('blots/inline');
@@ -387,7 +387,7 @@ ImageBlot.tagName = 'img';
 注：原文这里是一个 codepen 的视图，我们可以直接通过[这个链接](https://codepen.io/quill/pen/Pzggmy)过去。
 
 ## Videos
-我们将以与[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#image)类似的方式实现视频。我们可以使用HTML5`<video>`标签，但我们不能以这种方式播放YouTube视频，因为这可能是更常见和相关的用例，我们将使用`<iframe>`来支持此功能。在此我们不必，但是如果你想要多个Blots来使用相同的标签，除了`tagName`之外你还可以使用`className`，在下一个[Tweet](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#tweet)示例中进行了演示。
+我们将以与[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#image)类似的方式实现视频。我们可以使用HTML5`<video>`标签，但我们不能以这种方式播放YouTube视频，因为这可能是更常见和相关的用例，我们将使用`<iframe>`来支持此功能。在此我们不必，但是如果你想要多个Blots来使用相同的标签，除了`tagName`之外你还可以使用`className`，在下一个[Tweet](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#tweets)示例中进行了演示。
 
 此外，我们将添加对宽度和高度的支持，作为未注册的格式。只要没有与注册格式的命名空间冲突，就不必单独注册Embeds特有的格式。这是有效的，因为Blots只是将未知格式传递给它的孩子，最终到达了叶子。这也允许不同的Embeds以不同方式处理未注册的格式。例如，我们从早期嵌入的[image](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/cloning-medium-with-parchment.md#image)可以识别和处理`width`格式，与我们的视频在这里不同。
 
