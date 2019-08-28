@@ -38,7 +38,7 @@ if (range) {
 ```
 
 ## setSelection
-将用户选择设置为给定范围，这也将使编辑器聚焦。 提供null作为选择范围将使编辑器模糊。[来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。
+将用户选择设置为给定范围，这也将使编辑器聚焦。 提供null作为选择范围将使编辑器失去焦点。[来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。
 
 ### Methods
 ```javascript

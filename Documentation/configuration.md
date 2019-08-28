@@ -1,5 +1,5 @@
 # 配置
-Quill允许多种方式来定制它以满足您的需求。 本节致力于调整现有功能。 有关添加新功能的信息，请参阅[模块](https://quilljs.com/docs/modules/)部分;有关样式，请参阅[主题](https://quilljs.com/docs/themes/)部分。
+Quill允许多种方式来定制它以满足您的需求。 本节致力于调整现有功能。 有关添加新功能的信息，请参阅[模块](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/modules/MODULES.md)部分;有关样式，请参阅[主题](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/themes.md)部分。
 
 ## 容器
 Quill需要一个容器，其中将附加编辑器。 您可以传入CSS选择器或DOM对象。
@@ -43,15 +43,15 @@ DOM元素或DOM元素的CSS选择器，其中应限制编辑器的ui元素（即
 ### debug
 默认: `warn`
 
-[调试](https://quilljs.com/docs/api/#debug)的快捷方式。 注意debug是一种静态方法，会影响页面上其他Quill编辑器的实例。 默认情况下仅启用警告和错误消息。
+[调试](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/API/extension.md#debug)的快捷方式。 注意debug是一种静态方法，会影响页面上其他Quill编辑器的实例。 默认情况下仅启用警告和错误消息。
 
 ### formats
 默认: All formats
 
-在编辑器中允许[格式](https://quilljs.com/docs/formats/)的白名单。 有关完整列表，请参阅格式。
+在编辑器中允许[格式](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/formats.md)的白名单。 有关完整列表，请参阅格式。
 
 ### modules
-包含模块的集合和各自的选项。 有关更多信息，请参阅[模块](https://quilljs.com/docs/modules/).
+包含模块的集合和各自的选项。 有关更多信息，请参阅[模块](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/modules/MODULES.md).
 
 ### placeholder
 默认: None
@@ -69,4 +69,4 @@ DOM元素或DOM元素的CSS选择器，其中应限制编辑器的ui元素（即
 DOM元素或DOM元素的CSS选择器，指定哪个容器具有滚动条（即`overflow-y：auto`），if是否已使用自定义CSS从默认`ql-editor`更改。 当Quill设置为[自动增长](https://quilljs.com/playground/#autogrow)其高度时，必须修复滚动跳跃错误，并且滚动时负责另一个祖先容器。
 
 ### theme
-要使用的主题的名称。 内置选项是“泡沫”或“雪”。 无效或有价值的值将加载默认的最小主题。 请注意，主题的特定样式表仍需要手动包含。 有关更多信息，请参阅[主题](https://quilljs.com/docs/themes/)。
+要使用的主题的名称。 内置选项是“泡沫”或“雪”。 无效或有价值的值将加载默认的最小主题。 请注意，主题的特定样式表仍需要手动包含。 有关更多信息，请参阅[主题](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/themes.md)。
