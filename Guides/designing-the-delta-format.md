@@ -81,3 +81,245 @@ var content = [{
 这种明确的可预测性使得Deltas更容易使用，因为您需要处理的案例更少，并且因为相应的Delta看起来没有意外。 从长远来看，这使得使用Deltas的应用程序更易于理解和维护。
 
 ## Line Formatting
+行格式会影响整行的内容，因此它们对我们的紧凑和规范约束提出了有趣的挑战。表示居中文本的一种看似合理的方法如下：
+
+```js
+var content = [
+  { text: "Hello", attributes: { align: "center" } },
+  { text: "\nWorld" }
+];
+```
+
+但是如果用户删除换行符怎么办？如果我们很天真地去掉换行符，Delta就会变成这样：
+
+```js
+var content = [
+  { text: "Hello", attributes: { align: "center" } },
+  { text: "World" }
+];
+```
+
+这行还居中吗?如果答案是否定的，那么我们的表示就不是紧凑的，因为我们不需要属性对象，并且可以组合两个字符串：
+
+```js
+var content = [
+  { text: "HelloWorld" }
+];
+```
+
+但如果答案是肯定的，那么我们违反了规范约束，因为具有align属性的字符的任何排列都代表相同的内容。
+
+所以我们不能天真地去掉换行符。我们还必须删除行属性，或者扩展它们以填充行上的所有字符。
+
+如果我们从下面删除换行符会怎么样
+
+```js
+var content = [
+  { text: "Hello", attributes: { align: "center" } },
+  { text: "\n" },
+  { text: "World", attributes: { align: "right" } }
+];
+```
+
+不清楚我们得到的行是对齐的中心还是右。我们可以删除两者或者有一些排序规则来支持另一个，但是我们的Delta在这条路上变得越来越复杂，越来越难处理。
+
+这个问题引发了原子性，我们在换行符中发现了这一点。 但是我们有一个问题，如果我们有*n*行，我们只有*n-1*个换行符。
+
+为了解决这个问题，Quill为所有文档“添加”换行符，并始终以“\ n”结束Deltas。
+
+```js
+// Hello World on two lines
+var content = [
+  { text: "Hello" },
+  { text: "\n", attributes: { align: "center" } },
+  { text: "World" },
+  { text: "\n", attributes: { align: "right" } }   // Deltas must end with newline
+];
+```
+
+## Embedded Content
+我们想添加嵌入的内容，如图像或视频。字符串用于文本是很自然的，但是对于嵌入我们有更多的选择。由于存在不同类型的嵌入，我们的选择只需要包含此类型信息，然后包含实际内容。这里有许多合理的选项，但是我们将使用一个对象，它唯一的键是embed类型，而值是内容表示，它可以有任何类型或值。
+
+```js
+var img = {
+  image: {
+    url: 'https://quilljs.com/logo.png'
+  }
+};
+
+var f = {
+  formula: 'e=mc^2'
+};
+```
+
+与文本类似，图像可能具有一些定义特征，以及一些瞬态特征。文本内容我们使用`attributes`，图像也可以使用相同的`attributes`字段。但正因为如此，我们可以保留我们一直使用的一般结构，但是应该将我们的`key`键重命名为更通用的内容。由于我们稍后将探讨的原因，我们将选择名称insert。 把这一切放在一起：
+
+```js
+var content = [{
+  insert: 'Hello'
+}, {
+  insert: 'World',
+  attributes: { bold: true }
+}, {
+  insert: {
+    image: 'https://exclamation.com/mark.png'
+  },
+  attributes: { width: '100' }
+}];
+```
+
+## Describing Changes
+正如Delta所暗示的那样，我们的格式可以描述文档的更改以及文档本身。实际上，我们可以将文档视为我们对空文档所做的更改，以获取我们正在描述的文档。正如您可能已经猜到的，使用delta来描述更改是我们将`text`重命名为`insert`的原因。将Delta数组中的每个元素称为Operation。
+
+### Delete
+要描述删除文本，我们需要知道要删除的字符的位置和数量。要删除嵌入，除了了解嵌入的长度之外，不需要任何特殊处理。如果它不是1，那么我们需要指定当只删除嵌入的一部分时会发生什么。目前还没有这样的规范，所以无论图像由多少像素组成，视频有多少分钟，或者一副牌中有多少张幻灯片;嵌入的长度都是 **1** 。
+
+描述删除的一种合理方法是明确存储其索引和长度。
+
+```js
+var delta = [{
+  delete: {
+    index: 4,
+    length: 1
+  }
+}, {
+  delete: {
+    index: 12,
+    length: 3
+  }
+}];
+```
+
+我们必须根据索引对删除进行排序，并确保没有范围重叠，否则将违反我们的规范约束。这种索引和长度方法还有其他一些缺点，但是在描述格式更改之后，它们更容易理解。
+
+### Insert
+既然Deltas可能正在描述对非空文档的更改，那么`{insert：“Hello”}`就不够了，因为我们不知道应该在哪里插入“Hello”。我们可以通过添加索引来解决这个问题，类似于删除。
+
+### Format
+与删除类似，我们需要指定要格式化的文本范围，以及格式更改本身。格式化存在于`attributes`对象中，因此一个简单的解决方案是提供一个附加的`attributes`对象来与现有的属性对象合并。这种合并很浅，以保持简单。我们还没有发现一个足够令人信服的用例需要深度合并，并保证增加复杂性。
+
+```js
+var delta = [{
+  format: {
+    index: 4,
+    length: 1
+  },
+  attributes: {
+    bold: true
+  }
+}];
+```
+
+特殊情况是我们想要删除格式。为此，我们将使用`null`，因此`{bold: null}`表示删除粗体格式。我们可以指定任何错误的值，但是属性值为0或空字符串可能有合法的用例。
+
+**注意***：我们现在必须小心应用层的索引。如前所述，Deltas不赋予任何属性键值对任何固有的含义，也不赋予任何嵌入类型或值。Deltas不知道图像没有持续时间，文本没有替代文本，视频也不能加粗。以下是一个合法的Delta，可能是应用其他合法Deltas的结果，因为应用程序没有注意格式范围。
+
+```js
+var delta = [{
+  insert: {
+    image: "https://imgur.com/"
+  },
+  attributes: {
+    duration: 600
+  }
+}, {
+  insert: "Hello",
+  attributes: {
+    alt: "Funny cat photo"
+  }
+}, {
+  insert: {
+    video: "https://youtube.com/"
+  },
+  attributes: {
+    bold: true
+  }
+}];
+```
+
+### Pitfalls
+首先，我们应该清楚，在应用任何操作**之前**，索引必须引用其在文档中的位置。否则，后面的操作可能会删除前面的插入，取消前面格式的格式，等等，这会破坏紧凑性。
+
+操作也必须严格排序，以满足规范约束。先按索引排序，然后按长度排序，然后按类型排序，这是一种有效的方法。
+
+如前所述，删除范围不能重叠。反对重叠格式范围的情况不那么简单，但是我们也不需要重叠格式。
+
+Delta可能无效的原因越来越多。更好的格式将根本不允许表达这种情况。
+
+### Retain
+如果我们暂时停止我们的紧凑性形式，我们可以描述一种更简单的格式来表示插入、删除和格式化:
+
+- Delta将具有至少与正在修改的文档一样长的操作。
+
+- 每个操作都将描述该索引处的角色会发生什么。
+
+- 可选插入操作可使Delta比其描述的文档更长。
+
+这就需要创建一个新的操作，这只是意味着“保持这个字符的原样”。 我们称之为`retain`。
+
+```js
+// Starting with "HelloWorld",
+// bold "Hello", and insert a space right after it
+var change = [
+  { format: true, attributes: { bold: true } },  // H
+  { format: true, attributes: { bold: true } },  // e
+  { format: true, attributes: { bold: true } },  // l
+  { format: true, attributes: { bold: true } },  // l
+  { format: true, attributes: { bold: true } },  // o
+  { insert: ' ' },
+  { retain: true },  // W
+  { retain: true },  // o
+  { retain: true },  // r
+  { retain: true },  // l
+  { retain: true }   // d
+]
+```
+
+由于描述了每个字符，因此不再需要显式索引和长度。 这使得无法表达重叠范围和无序索引。
+
+因此，我们可以轻松优化合并相邻的相等操作，重新引入*长度*。如果最后一个操作是`retain`，我们可以简单地删除它，因为它只是指示不对文档的其余部分执行任何操作。
+
+```js
+var change = [
+  { format: 5, attributes: { bold: true } }
+  { insert: ' ' }
+]
+```
+
+此外，您可能注意到`retain`在某些方面只是`format`的一种特殊情况。例如，`{format：1，attributes：{}}` 和 `{retain：1}`之间没有实际差异。压缩将丢弃空`attributes`对象，只留下`{format：1}`，从而产生规范化冲突。因此，在我们的示例中，我们将简单地组合`format`和`retain`，并保留名称`retain`。
+
+```js
+var change = [
+  { retain: 5, attributes: { bold: true } },
+  { insert: ' ' }
+]
+```
+
+我们现在有一个非常接近当前标准格式的Delta。
+
+### Ops
+现在我们有一个易于使用的JSON数组，它描述了富文本。这在存储和传输层非常出色，但应用程序可以从更多功能中受益。我们可以通过将Deltas实现为一个类来添加它，可以很容易地从JSON初始化或导出到JSON，然后为它提供相关的方法。
+
+在Delta成立之初，不可能对Array进行子类化。出于这个原因，Deltas被表示为对象，具有单个属性ops，用于存储我们一直在讨论的操作数组。
+
+```js
+var delta = {
+  ops: [
+    {
+      insert: 'Hello'
+    }, 
+    {
+      insert: 'World',
+      attributes: { bold: true }
+    }, 
+    {
+      insert: {
+        image: 'https://exclamation.com/mark.png'
+      },
+      attributes: { width: '100' }
+    }
+  ]
+};
+```
+
+最后，我们得出了今天存在的[Delta format](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/delta.md)。
