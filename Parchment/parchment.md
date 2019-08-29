@@ -1,20 +1,20 @@
 # Parchment
 
-Parchment是[Quill](https://github.com/quilljs/quill)的文档模型。它是一个并行的树结构，并且提供对内容的编辑（如Quill）的功能。一个Parchment树是由[Blots]()组成的，它反映了一个DOM对应的节点。Blots能够提供结构、格式和内容或者只有内容。Attributors能够提供轻量级的格式化信息。
+Parchment是[Quill](https://github.com/quilljs/quill)的文档模型。它是一个并行的树结构，并且提供对内容的编辑（如Quill）的功能。一个Parchment树是由[Blots](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#blots)组成的，它反映了一个DOM对应的节点。Blots能够提供结构、格式和内容或者只有内容。[Attributors](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#attributors)能够提供轻量级的格式化信息。
 
-> 注意：你不应该使用`new`来实例化一个Blot。这个方法可能阻止Blot的必要生命周期。使用带有注册功能的`create()`方法代替。
+> 注意：你不应该使用`new`来实例化一个Blot。这个方法可能阻止Blot的必要生命周期。使用[注册](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)的`create()`方法代替。
 
 ```bash
 npm install --save parchment
 ```
 
-可以查看[Parchment使用简介]()来了解Quill是如何使用Parchment的文档模型的。
+可以查看[Cloning Medium with Parchment](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/5.%20cloning-medium-with-parchment.md)来了解Quill是如何使用Parchment的文档模型的。
 
 ## Blots
 
-Blots是Parchment文档的基本组成部分。提供了几个基本的实现，如：Block、Inline和Embed。一般来说，你会想扩展其中的一个，而不是从头开始构建。实现之后，需要在使用之前进行注册。
+Blots是Parchment文档的基本组成部分。提供了几个基本的实现，如：[Block](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#block-blot)、[Inline](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#inline-blot)和[Embed](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#embed-blot)。一般来说，你会想扩展其中的一个，而不是从头开始构建。实现之后，需要在使用之前进行[注册](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)。
 
-一个最基本的Blots必须使用一个静态的blotName来命名，并且有一个与之相关联的tagName或者className。如果一个Blot是通过标签和类定义的，类是第一优先级，标签被用作备用。Blots还必须有一个范围，来确定他是内联（inline）还是分块（block）。
+一个最基本的Blots必须使用一个静态的blotName来命名，并且有一个与之相关联的tagName或者className。如果一个Blot是通过标签和类定义的，类是第一优先级，标签被用作备用。Blots还必须有一个[范围](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)，来确定他是内联（inline）还是分块（block）。
 
 ```js
 class Blot {
@@ -148,7 +148,7 @@ LinkBlot.tagName = 'A';
 Parchment.register(LinkBlot);
 ```
 
-Quill再其源码中提供了很多实现的示例。
+Quill再其[源码](https://github.com/quilljs/quill/tree/develop/formats)中提供了很多实现的示例。
 
 ## Block Blot
 
@@ -160,7 +160,7 @@ Quill再其源码中提供了很多实现的示例。
 
 ## Embed Blot
 
-非文本节点的基本实现，可以被格式化。其对应的额DOM节点通常是一个[Void元素]()，也可以是一个[正常元素]()。在这些情况下，Parchment将不会操作或者感知到元素的子元素，正确的执行Blot的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
+非文本节点的基本实现，可以被格式化。其对应的额DOM节点通常是一个[Void元素](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)，也可以是一个[正常元素](https://html.spec.whatwg.org/multipage/syntax.html#normal-elements)。在这些情况下，Parchment将不会操作或者感知到元素的子元素，正确的执行Blot的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
 
 ## Scroll
 
@@ -168,7 +168,7 @@ Parchment文档的根节点。不能够被格式化。
 
 ## Attributors
 
-Attributors是一种轻量级的格式话方式。它们的DOM对应的是[属性]()。像DOM属性和节点的关系一样，Attributors也属于Blots。调用Inline或者Block Blot的`formats()`方法将会返回相应的DOM节点的格式（如果有的话）以及DOM节点属性表示的格式（如果有的话）。
+Attributors是一种轻量级的格式话方式。它们的DOM对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像DOM属性和节点的关系一样，Attributors也属于Blots。调用[Inline](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#inline-blot)或者[Block](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#block-blot) Blot的`formats()`方法将会返回相应的DOM节点的格式（如果有的话）以及DOM节点属性表示的格式（如果有的话）。
 
 Attributors 有以下的以下接口：
 
@@ -187,9 +187,9 @@ class Attributor {
 }
 ```
 
-注意：自定义的属性是实例，而不是类似于Blots的类定义。类似于Blots，你可能希望使用现有的Attributors实现，而不是从头开始创建，比如基础的[Attritor]()、[Class Attributor]()或者[Style Attributor]()。
+**注意**：自定义的属性是实例，而不是类似于Blots的类定义。类似于Blots，你可能希望使用现有的Attributors实现，而不是从头开始创建，比如基础的[Attritor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#attributor)、[Class Attributor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#class-attributor)或者[Style Attributor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#style-attributor)。
 
-Attributors的实现非常简单，并且它的源代码可能是另一个库的资源。
+Attributors的实现非常简单，并且它的[源码](https://github.com/quilljs/parchment/tree/master/src/attributor)可能是另一个库的资源。
 
 ### Attributor
 
